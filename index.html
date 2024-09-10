@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coxygen E-Commerce Store</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="./js/env.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="header-container">
+        <div class="logo-container">
+          <img src="" id="wallet-logo" alt="Wallet Logo" />
+          <h3>Coxygen E-Commerce Store</h3>
+        </div>
+        <div class="wallet-info">
+          <p></p>
+          <p id="address">Wallet is connecting...</p>
+        </div>
+        <nav class="nav-menu">
+          <ul>
+            <li>
+              <a href="#purchasedItems" id="balance"
+                >Wallet data is loading...
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section id="products" class="product-section">
+        <h2>Items for Sale</h2>
+        <div class="product-grid">
+          <!-- Product 1: Shirt -->
+          <div class="product" data-price="10">
+            <img src="./images/1.png" alt="Small Birthday Cart" />
+            <h3>Small Birthday Cart</h3>
+            <p>Price: 10 Ada</p>
+            <button class="buy-button">Buy</button>
+          </div>
+          <!-- Product 2: Trouser -->
+          <div class="product" data-price="15">
+            <img src="./images/2.png" alt="Standard Birthday Cart" />
+            <h3>Standard Birthday Cart</h3>
+            <p>Price: 15 Ada</p>
+            <button class="buy-button">Buy</button>
+          </div>
+          <!-- Product 3: Shoes -->
+          <div class="product" data-price="20">
+            <img src="./images/3.png" alt="Neat Male Shirt" />
+            <h3>Neat Male Shirt</h3>
+            <p>Price: 20 Ada</p>
+            <button class="buy-button">Buy</button>
+          </div>
+          <!-- Product 4: Bag -->
+          <div class="product" data-price="25">
+            <img src="./images/4.png" alt="Standard Male Shirt" />
+            <h3>Standard Male Shirt</h3>
+            <p>Price: 25 Ada</p>
+            <button class="buy-button">Buy</button>
+          </div>
+          <!-- Product 5: Shirt -->
+          <div class="product" data-price="30">
+            <img src="./images/5.png" alt="Male Shirt Pack" />
+            <h3>Male Shirt Pack</h3>
+            <p>Price: 30 Ada</p>
+            <button class="buy-button">Buy</button>
+          </div>
+          <!-- Product 6: Trouser -->
+          <div class="product" data-price="35">
+            <img src="./images/6.png" alt="Birthday Cake" />
+            <h3>Birthday Cake</h3>
+            <p>Price: 35 Ada</p>
+            <button class="buy-button">Buy</button>
+          </div>
+        </div>
+      </section>
+      <section
+        id="purchasedItems"
+        class="product-section"
+        style="display: none"
+      >
+        <h2>Purchased Items</h2>
+        <div class="product-grid" id="purchasedList"></div>
+      </section>
+    </main>
+    <script type="module" src="./js/script.js"></script>
+    <script type="module" crossorigin>
+      import {
+        init,
+        enableWallet,
+        isWalletEnabled,
+        WalletData,
+        adaFunc,
+        shortAddressFunc,
+      } from "./js/index.js";
+
+      init()
+        .then(async (wallet) => {
+          if (wallet.hasOwnProperty("icon")) {
+            document
+              .getElementById("wallet-logo")
+              .setAttribute("src", wallet.icon);
+          }
+
+          if (wallet.hasOwnProperty("name")) {
+            document
+              .getElementById("wallet-logo")
+              .setAttribute("alt", wallet.name);
+          }
+
+          const isMyWalletConnected = await isWalletEnabled(wallet);
+          if (!isMyWalletConnected) {
+            try {
+              const walletHandler = await enableWallet(wallet);
+            } catch (err) {
+              console.error(err);
+            }
+          }
+
+          const userWalletData = await WalletData(wallet, 10000);
+          const AdaBalance = await adaFunc(userWalletData);
+          localStorage.setItem("WALLET_CONNECTED", true);
+
+          document.getElementById("balance").innerHTML = `Balance: ${
+            AdaBalance / 1000000
+          } ADA`;
+          const shortAddress = await shortAddressFunc(userWalletData);
+          document.getElementById(
+            "address"
+          ).innerHTML = `Address: ${shortAddress}`;
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    </script>
+  </body>
+</html>
