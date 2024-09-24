@@ -148,3 +148,35 @@ header {
     grid-template-columns: 1fr;
   }
 }
+
+#full-screen-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-bar {
+  width: 0;
+  height: 4px; /* Height of the loader bar */
+  background-color: #3498db; /* Color of the loader bar */
+  animation: load 2s infinite;
+}
+
+@keyframes load {
+  0% {
+    width: 0;
+  }
+  50% {
+    width: 50%;
+  }
+  100% {
+    width: 100%;
+  }
+}

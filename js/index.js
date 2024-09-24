@@ -15,7 +15,7 @@ import {
   Program,
   ByteArrayData,
   ConstrData,
-} from "./helios.js";
+} from "./js/helios.js";
 
 export const hlib = {
   Value: Value,
@@ -228,43 +228,72 @@ const walletHandler = (await wallet.enable()); j.test("walletEssentials","wallet
   }
 }
 
-export function printHtmlReceipt(itemName, itemPrice, imgUrl) {
-  // Create a container for the receipt
-  const receiptContainer = document.createElement("div");
-  receiptContainer.style.border = "1px solid #000";
-  receiptContainer.style.padding = "20px";
-  receiptContainer.style.width = "300px";
-  receiptContainer.style.margin = "20px auto";
-  receiptContainer.style.textAlign = "center";
+ export function printHtmlReceipt(itemName, itemPrice, imgUrl, txid = "") {
+   // Create a modal container
+   const modal = document.createElement("div");
+   modal.style.position = "fixed";
+   modal.style.top = "0";
+   modal.style.left = "0";
+   modal.style.width = "100%";
+   modal.style.height = "100%";
+   modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+   modal.style.display = "flex";
+   modal.style.justifyContent = "center";
+   modal.style.alignItems = "center";
+   modal.style.zIndex = "1000";
 
-  // Add title
-  const title = document.createElement("h2");
-  title.innerText = "****** RECEIPT ******";
-  receiptContainer.appendChild(title);
+   // Create a receipt container
+   const receiptContainer = document.createElement("div");
+   receiptContainer.style.border = "1px solid #000";
+   receiptContainer.style.padding = "20px";
+   receiptContainer.style.width = "300px";
+   receiptContainer.style.backgroundColor = "#fff";
+   receiptContainer.style.textAlign = "center";
 
-  // Add item name
-  const itemElement = document.createElement("p");
-  itemElement.innerHTML = `<strong>Item:</strong> ${itemName}`;
-  receiptContainer.appendChild(itemElement);
+   // Add title
+   const title = document.createElement("h2");
+   title.innerText = "****** RECEIPT ******";
+   receiptContainer.appendChild(title);
 
-  // Add item price
-  const priceElement = document.createElement("p");
-  priceElement.innerHTML = `<strong>Price:</strong> $${itemPrice.toFixed(2)}`;
-  receiptContainer.appendChild(priceElement);
+   // Add item name
+   const itemElement = document.createElement("p");
+   itemElement.innerHTML = `<strong>Item:</strong> ${itemName}`;
+   receiptContainer.appendChild(itemElement);
 
-  // Add image
-  const imgElement = document.createElement("img");
-  imgElement.src = imgUrl;
-  imgElement.alt = itemName;
-  imgElement.style.width = "100px"; // Set a width for the image
-  imgElement.style.height = "auto"; // Maintain aspect ratio
-  receiptContainer.appendChild(imgElement);
+   // Add item price
+   const priceElement = document.createElement("p");
+   priceElement.innerHTML = `<strong>Price:</strong> $${itemPrice.toFixed(2)}`;
+   receiptContainer.appendChild(priceElement);
 
-  // Add thank you message
-  const thankYouMessage = document.createElement("p");
-  thankYouMessage.innerText = "******* Thank you for your purchase! *******";
-  receiptContainer.appendChild(thankYouMessage);
+   // Add transaction ID
+   const txidElement = document.createElement("p");
+   txidElement.innerHTML = `<strong>Transaction ID:</strong> ${txid}`;
+   receiptContainer.appendChild(txidElement);
 
-  // Append the receipt to the body (or any specific container)
-  // document.body.appendChild(receiptContainer);
-}
+   // Add image
+   const imgElement = document.createElement("img");
+   imgElement.src = imgUrl;
+   imgElement.alt = itemName;
+   imgElement.style.width = "100px"; // Set a width for the image
+   imgElement.style.height = "auto"; // Maintain aspect ratio
+   receiptContainer.appendChild(imgElement);
+
+   // Add thank you message
+   const thankYouMessage = document.createElement("p");
+   thankYouMessage.innerText = "******* Thank you for your purchase! *******";
+   receiptContainer.appendChild(thankYouMessage);
+
+   // Create a close button
+   const closeButton = document.createElement("button");
+   closeButton.innerText = "Close";
+   closeButton.onclick = function () {
+     document.body.removeChild(modal);
+   };
+   receiptContainer.appendChild(closeButton);
+
+   // Append the receipt container to the modal
+   modal.appendChild(receiptContainer);
+
+   // Append the modal to the body
+   document.body.appendChild(modal);
+ }

@@ -1,5 +1,5 @@
 import { printHtmlReceipt, sendADA } from "./index.js";
-
+import { sendADA as CoxysendADA } from "./coxylib.js";
 // Select necessary DOM elements
 const buyButtons = document.querySelectorAll(".buy-button");
 const purchasedList = document.getElementById("purchasedList");
@@ -11,46 +11,70 @@ localStorage.setItem("WALLET_CONNECTED", false);
 
 let purchasedItems = JSON.parse(localStorage.getItem("purchasedItems")) || [];
 
+function showLoader() {
+  const loader = document.getElementById("linear-loader");
+  loader.style.display = "block";
+}
+
+function hideLoader() {
+  const loader = document.getElementById("linear-loader");
+  loader.style.display = "none";
+}
+
 // Function to handle the purchase button click
 async function handlePurchase(event) {
-  const product = event.target.parentElement; // Get the parent product div
-  const productName = product.querySelector("h3").innerText; // Get the product name
-  const imgUrl = product.querySelector("img").src; // Get the product name
-  const productPrice = Number(product.dataset.price); // Get the product price
+  try {
+    const button = event.target; // Get the button that was clicked
+    button.disabled = true; // Disable the button
+    showLoader();
+    const product = event.target.parentElement; // Get the parent product div
+    const productName = product.querySelector("h3").innerText; // Get the product name
+    const imgUrl = product.querySelector("img").src; // Get the product name
+    const productPrice = Number(product.dataset.price); // Get the product price
 
-  // Add the purchased item to the purchasedItems array
-  purchasedItems.push({ name: productName, price: productPrice });
-  // Save the updated array to local storage
-  localStorage.setItem("purchasedItems", JSON.stringify(purchasedItems));
+    // Add the purchased item to the purchasedItems array
+    purchasedItems.push({ name: productName, price: productPrice });
+    // Save the updated array to local storage
+    localStorage.setItem("purchasedItems", JSON.stringify(purchasedItems));
 
-  // Alert the user of their purchase
-  let WALLET_CONNECTED = localStorage.getItem("WALLET_CONNECTED");
-  console.log({
-    WALLET_CONNECTED,
-    WALLET_CONNECTED_Bool: Boolean(WALLET_CONNECTED),
-  });
-  if (WALLET_CONNECTED == "false") {
-    alert("Wallet not connect, refresh to connect wallet again");
-  } else {
-    // alert(`${productName} purchased for ${productPrice} Ada!`);
-    const productData = { productName, productPrice, imgUrl };
-    const sellerAddress =
-      "addr_test1qrzwukf2fadpgt4cxqypd2em9utqrkcvgvry2674kpkt869akcdlt7uxz2fvxg9k9jmx0rscuhglkemcuwcynhe8ztgqq6e5r2";
-    console.log(productData);
-    const myWalletData = localStorage.getItem("walletData");
+    // Alert the user of their purchase
+    let WALLET_CONNECTED = localStorage.getItem("WALLET_CONNECTED");
+    console.log({
+      WALLET_CONNECTED,
+      WALLET_CONNECTED_Bool: Boolean(WALLET_CONNECTED),
+    });
+    if (WALLET_CONNECTED == "false") {
+      alert("Wallet not connect, refresh to connect wallet again");
+    } else {
+      // alert(`${productName} purchased for ${productPrice} Ada!`);
+      const productData = { productName, productPrice, imgUrl };
+      const sellerAddress =
+        "addr_test1qrzwukf2fadpgt4cxqypd2em9utqrkcvgvry2674kpkt869akcdlt7uxz2fvxg9k9jmx0rscuhglkemcuwcynhe8ztgqq6e5r2";
+      console.log(productData);
+      const myWalletData = localStorage.getItem("walletData");
+      /* 
     await sendADA(
       sellerAddress,
       productPrice,
       JSON.parse(myWalletData),
       productData
     );
-    printHtmlReceipt(productName, productPrice, imgUrl);
+*/
+      const tx = await CoxysendADA(sellerAddress, productPrice);
+      hideLoader();
+      button.disabled = false; // Re-enable the button
+      // Render the list of purchased items
+      printHtmlReceipt(productName, productPrice, imgUrl, tx);
+    }
+  } catch (error) {
+    alert("Purchase Error, Please try again");
   }
 }
 
 // Add click event listeners to each buy button
 buyButtons.forEach((button) => {
   button.addEventListener("click", handlePurchase);
+  console.log(button);
 });
 
 // Function to toggle between viewing products and purchased items
