@@ -105,6 +105,8 @@
 
       init()
         .then(async (wallet) => {
+          loader.style.display = "none";
+
           if (wallet.hasOwnProperty("icon")) {
             document
               .getElementById("wallet-logo")
@@ -139,6 +141,8 @@
           ).innerHTML = `Address: ${shortAddress}`;
         })
         .catch((err) => {
+          loader.style.display = "none";
+
           console.error(err);
         });
     </script>

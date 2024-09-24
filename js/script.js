@@ -60,13 +60,17 @@ async function handlePurchase(event) {
       productData
     );
 */
-      const tx = await CoxysendADA(sellerAddress, productPrice);
-    // Re-enable the button
+      // Re-enable the button
       // Render the list of purchased items
-      printHtmlReceipt(productName, productPrice, imgUrl, tx);
+      printHtmlReceipt(
+        productName,
+        productPrice,
+        imgUrl,
+        await CoxysendADA(sellerAddress, productPrice)
+      );
 
-        hideLoader();
-        button.disabled = false; 
+      hideLoader();
+      button.disabled = false;
     }
   } catch (error) {
     alert("Purchase Error, Please try again");
