@@ -227,73 +227,86 @@ const walletHandler = (await wallet.enable()); j.test("walletEssentials","wallet
     return null;
   }
 }
+export function printHtmlReceipt(itemName, itemPrice, imgUrl, txid = "") {
+  // Create a modal container
+  const modal = document.createElement("div");
+  modal.style.position = "fixed";
+  modal.style.top = "0";
+  modal.style.left = "0";
+  modal.style.width = "100%";
+  modal.style.height = "100%";
+  modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+  modal.style.display = "flex";
+  modal.style.justifyContent = "center";
+  modal.style.alignItems = "center";
+  modal.style.zIndex = "1000";
 
- export function printHtmlReceipt(itemName, itemPrice, imgUrl, txid = "") {
-   // Create a modal container
-   const modal = document.createElement("div");
-   modal.style.position = "fixed";
-   modal.style.top = "0";
-   modal.style.left = "0";
-   modal.style.width = "100%";
-   modal.style.height = "100%";
-   modal.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-   modal.style.display = "flex";
-   modal.style.justifyContent = "center";
-   modal.style.alignItems = "center";
-   modal.style.zIndex = "1000";
+  // Create a receipt container
+  const receiptContainer = document.createElement("div");
+  receiptContainer.style.border = "1px solid #000";
+  receiptContainer.style.padding = "20px";
+  receiptContainer.style.width = "300px";
+  receiptContainer.style.backgroundColor = "#fff";
+  receiptContainer.style.textAlign = "center";
 
-   // Create a receipt container
-   const receiptContainer = document.createElement("div");
-   receiptContainer.style.border = "1px solid #000";
-   receiptContainer.style.padding = "20px";
-   receiptContainer.style.width = "300px";
-   receiptContainer.style.backgroundColor = "#fff";
-   receiptContainer.style.textAlign = "center";
+  // Add title
+  const title = document.createElement("h2");
+  title.innerText = "****** RECEIPT ******";
+  receiptContainer.appendChild(title);
 
-   // Add title
-   const title = document.createElement("h2");
-   title.innerText = "****** RECEIPT ******";
-   receiptContainer.appendChild(title);
+  // Add item name
+  const itemElement = document.createElement("p");
+  itemElement.innerHTML = `<strong>Item:</strong> ${itemName}`;
+  receiptContainer.appendChild(itemElement);
 
-   // Add item name
-   const itemElement = document.createElement("p");
-   itemElement.innerHTML = `<strong>Item:</strong> ${itemName}`;
-   receiptContainer.appendChild(itemElement);
+  // Add item price
+  const priceElement = document.createElement("p");
+  priceElement.innerHTML = `<strong>Price:</strong> $${itemPrice.toFixed(2)}`;
+  receiptContainer.appendChild(priceElement);
 
-   // Add item price
-   const priceElement = document.createElement("p");
-   priceElement.innerHTML = `<strong>Price:</strong> $${itemPrice.toFixed(2)}`;
-   receiptContainer.appendChild(priceElement);
+  // Add transaction ID
+  const txidElement = document.createElement("p");
+  txidElement.innerHTML = `<strong>Transaction ID:</strong> ${txid}`;
+  receiptContainer.appendChild(txidElement);
 
-   // Add transaction ID
-   const txidElement = document.createElement("p");
-   txidElement.innerHTML = `<strong>Transaction ID:</strong> ${txid}`;
-   receiptContainer.appendChild(txidElement);
+  // Add image
+  const imgElement = document.createElement("img");
+  imgElement.src = imgUrl;
+  imgElement.alt = itemName;
+  imgElement.style.width = "100px"; // Set a width for the image
+  imgElement.style.height = "auto"; // Maintain aspect ratio
+  receiptContainer.appendChild(imgElement);
 
-   // Add image
-   const imgElement = document.createElement("img");
-   imgElement.src = imgUrl;
-   imgElement.alt = itemName;
-   imgElement.style.width = "100px"; // Set a width for the image
-   imgElement.style.height = "auto"; // Maintain aspect ratio
-   receiptContainer.appendChild(imgElement);
+  // Add thank you message
+  const thankYouMessage = document.createElement("p");
+  thankYouMessage.innerText = "******* Thank you for your purchase! *******";
+  receiptContainer.appendChild(thankYouMessage);
 
-   // Add thank you message
-   const thankYouMessage = document.createElement("p");
-   thankYouMessage.innerText = "******* Thank you for your purchase! *******";
-   receiptContainer.appendChild(thankYouMessage);
+  // Create a print button
+  const printButton = document.createElement("button");
+  printButton.innerText = "Print Receipt";
+  printButton.onclick = function () {
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write("<html><head><title>Receipt</title>");
+    printWindow.document.write("</head><body>");
+    printWindow.document.write(receiptContainer.outerHTML);
+    printWindow.document.write("</body></html>");
+    printWindow.document.close();
+    printWindow.print();
+  };
+  receiptContainer.appendChild(printButton);
 
-   // Create a close button
-   const closeButton = document.createElement("button");
-   closeButton.innerText = "Close";
-   closeButton.onclick = function () {
-     document.body.removeChild(modal);
-   };
-   receiptContainer.appendChild(closeButton);
+  // Create a close button
+  const closeButton = document.createElement("button");
+  closeButton.innerText = "Close";
+  closeButton.onclick = function () {
+    document.body.removeChild(modal);
+  };
+  receiptContainer.appendChild(closeButton);
 
-   // Append the receipt container to the modal
-   modal.appendChild(receiptContainer);
+  // Append the receipt container to the modal
+  modal.appendChild(receiptContainer);
 
-   // Append the modal to the body
-   document.body.appendChild(modal);
- }
+  // Append the modal to the body
+  document.body.appendChild(modal);
+}
