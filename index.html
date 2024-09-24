@@ -102,11 +102,12 @@
         adaFunc,
         shortAddressFunc,
       } from "./js/index.js";
-      const loader = document.getElementById("linear-loader");
+      const loader2 = document.getElementById("linear-loader");
+      loader2.style.display = "block";
 
       init()
         .then(async (wallet) => {
-          loader.style.display = "none";
+          loader2.style.display = "none";
 
           if (wallet.hasOwnProperty("icon")) {
             document
@@ -142,7 +143,7 @@
           ).innerHTML = `Address: ${shortAddress}`;
         })
         .catch((err) => {
-          loader.style.display = "none";
+          loader2.style.display = "none";
 
           console.error(err);
         });
